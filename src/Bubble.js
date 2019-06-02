@@ -2,7 +2,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Text, Clipboard, StyleSheet, TouchableWithoutFeedback, View, ViewPropTypes } from 'react-native';
+import { Text, Clipboard, StyleSheet, TouchableOpacity, View, ViewPropTypes } from 'react-native';
 
 import MessageText from './MessageText';
 import MessageImage from './MessageImage';
@@ -19,7 +19,12 @@ export default class Bubble extends React.Component {
     if (this.props.onLongPress) {
       this.props.onLongPress(this.context, this.props.currentMessage);
     } else if (this.props.currentMessage.text) {
-      const options = ['Copy Text', 'Cancel'];
+
+      let right_options = ['Copy Text', 'Delete', 'Cancel'];
+      let left_options = ['Copy Text', 'Cancel'];
+
+      let options = (this.props.position == 'right') ? right_options : left_options;
+
       const cancelButtonIndex = options.length - 1;
       this.context.actionSheet().showActionSheetWithOptions(
         {
@@ -30,6 +35,12 @@ export default class Bubble extends React.Component {
           switch (buttonIndex) {
             case 0:
               Clipboard.setString(this.props.currentMessage.text);
+              break;
+            case 1:
+              if(this.props.position == 'right'){
+                this.props.deleteMessage();
+              }
+
               break;
             default:
               break;
@@ -162,7 +173,7 @@ export default class Bubble extends React.Component {
             this.handleBubbleToPrevious(),
           ]}
         >
-          <TouchableWithoutFeedback
+          <TouchableOpacity
             onLongPress={this.onLongPress}
             accessibilityTraits="text"
             {...this.props.touchableProps}
@@ -178,7 +189,7 @@ export default class Bubble extends React.Component {
                 {this.renderTicks()}
               </View>
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -195,7 +206,7 @@ const styles = {
     wrapper: {
       borderRadius: 15,
       backgroundColor: Color.leftBubbleBackground,
-      marginRight: 60,
+      marginRight: 130,
       minHeight: 20,
       justifyContent: 'flex-end',
     },
@@ -218,7 +229,7 @@ const styles = {
     wrapper: {
       borderRadius: 15,
       backgroundColor: Color.defaultBlue,
-      marginLeft: 60,
+      marginLeft: 130,
       minHeight: 20,
       justifyContent: 'flex-end',
     },
